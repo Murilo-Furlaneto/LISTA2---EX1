@@ -1,0 +1,63 @@
+name: Blank snippet (1)
+description: Create a new snippet from a blank template.
+host: EXCEL
+api_set: {}
+script:
+  content: |
+    const field1 = document.getElementById("name") as HTMLInputElement;
+    const field2 = document.getElementById("type") as HTMLSelectElement;
+    const field3 = document.getElementById("breed") as HTMLInputElement;
+    const field4 = document.getElementById("weight") as HTMLInputElement;
+    const save = document.getElementById("save") as HTMLButtonElement;
+    const show = document.getElementById("show") as HTMLButtonElement;
+    const pets = [];
+    save.addEventListener("click", () => {
+      Excel.run(async (context) => {const sheet = context.workbook.worksheets.getActiveWorksheet();
+          sheet.getUsedRange().clear();
+          if (!field1.value || !field2.value || !field3.value || !field4.value) {sheet.getRange("A1").values = [["Todos os campos são obrigatórios!"]];      
+          sheet.getUsedRange().format.autofitColumns();
+          return;}
+          const pet = {name: field1.value,
+           type: field2.value,
+           breed: field3.value,
+           weight: field4.valueAsNumber};
+           pets.push(pet);
+           field1.value = "";
+           field2.value = "";
+           field3.value = "";
+           field4.value = "";});});
+           show.addEventListener("click", () => {Excel.run(async (context) => {const sheet = context.workbook.worksheets.getActiveWorksheet();    sheet.getUsedRange().clear();
+           for (let i = 1; i <= pets.length; i++) {
+             const pet = pets[i - 1];
+             sheet.getRange(`A${i}:D${i}`).values = [[pet.name, pet.type, pet.breed, pet.weight]];}sheet.getRange("D1:D999").numberFormat = [["0.0"]];
+             sheet.getUsedRange().format.autofitColumns();});
+           });
+  language: typescript
+template:
+  content: "<h1>Cadastro de Pets</h1>\n<div>\n\t<input id=\"name\" placeholder=\"Nome\">\n  <select id=\"type\"><option value=\"\">Tipo</option>\n  <option>Cachorro</option>\n  <option>Gato</option>\n  /select><input id=\"breed\" placeholder=\"Raça\">\n  <input id=\"weight\" type=\"number\" placeholder=\"Peso\"></div>\n\t<br>\n  <div>\n\t<button id=\"save\">Salvar</button>\n  <button id=\"show\">Exibir na Planilha</button>\n  </div>"
+  language: html
+style:
+  content: |-
+    section.samples {
+        margin-top: 20px;
+    }
+
+    section.samples .ms-Button, section.setup .ms-Button {
+        display: block;
+        margin-bottom: 5px;
+        margin-left: 20px;
+        min-width: 80px;
+    }
+  language: css
+libraries: |
+  https://appsforoffice.microsoft.com/lib/1/hosted/office.js
+  @types/office-js
+
+  office-ui-fabric-js@1.4.0/dist/css/fabric.min.css
+  office-ui-fabric-js@1.4.0/dist/css/fabric.components.min.css
+
+  core-js@2.4.1/client/core.min.js
+  @types/core-js
+
+  jquery@3.1.1
+  @types/jquery@3.3.1
